@@ -1,0 +1,346 @@
+2024-09-12 17:13:39.488 | ERROR    | api.api_v1.endpoints:get_list_jobs_upwork:13 - BrowserType.launch: Executable doesn't exist at /Users/evgenijkukuskin/Library/Caches/ms-playwright/chromium-1129/chrome-mac/Chromium.app/Contents/MacOS/Chromium
+╔════════════════════════════════════════════════════════════╗
+║ Looks like Playwright was just installed or updated.       ║
+║ Please run the following command to download new browsers: ║
+║                                                            ║
+║     playwright install                                     ║
+║                                                            ║
+║ <3 Playwright Team                                         ║
+╚════════════════════════════════════════════════════════════╝
+Traceback (most recent call last):
+
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/main.py", line 16, in <module>
+    uvicorn.run(app, host="0.0.0.0", port=7618)
+    │       │   └ <fastapi.applications.FastAPI object at 0x105166810>
+    │       └ <function run at 0x165ed19e0>
+    └ <module 'uvicorn' from '/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/uvicorn/__init_...
+
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/uvicorn/main.py", line 577, in run
+    server.run()
+    │      └ <function Server.run at 0x165ed1bc0>
+    └ <uvicorn.server.Server object at 0x165f1b3e0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           │       │   │    │             └ None
+           │       │   │    └ <function Server.serve at 0x165ed1c60>
+           │       │   └ <uvicorn.server.Server object at 0x165f1b3e0>
+           │       └ <function run at 0x1056a1f80>
+           └ <module 'asyncio' from '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/__init__.py'>
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x165ef1d20>
+           │      └ <function Runner.run at 0x105739b20>
+           └ <asyncio.runners.Runner object at 0x11c446900>
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at /Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/pyth...
+           │    │     └ <method 'run_until_complete' of 'uvloop.loop.Loop' objects>
+           │    └ <uvloop.Loop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x11c446900>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x104f93110>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb50>>
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x105166810>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x104f93110>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb50>>
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb50>>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x165fbc5c0>
+          └ <fastapi.applications.FastAPI object at 0x105166810>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x165fc9c60>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x165fbc590>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x165fbc5c0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x165fc9c60>
+          │                            │    │    │     │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb...
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x165fbdb20>
+          │                            │    └ <fastapi.routing.APIRouter object at 0x165beffe0>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x165fbc590>
+          └ <function wrap_app_handling_exceptions at 0x165b96ac0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 51, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x165fc9da0>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          └ <fastapi.routing.APIRouter object at 0x165beffe0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x165fc9da0>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x165beffe0>>
+          └ <fastapi.routing.APIRouter object at 0x165beffe0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x165fc9da0>
+          │     │      │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb...
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │     └ <function Route.handle at 0x165bd02c0>
+          └ APIRoute(path='/list_jobs', name='get_list_jobs_upwork', methods=['GET'])
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x165fc9da0>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │    └ <function request_response.<locals>.app at 0x165f0ec00>
+          └ APIRoute(path='/list_jobs', name='get_list_jobs_upwork', methods=['GET'])
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x165fc9da0>
+          │                            │    │        │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb...
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x165fbd8b0>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x165fc9e40>
+          └ <function wrap_app_handling_exceptions at 0x165b96ac0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 51, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x165fc9ee0>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fbdb...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x165fc9e40>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x165fbd8b0>
+                     └ <function get_request_handler.<locals>.app at 0x165f0eb60>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x165bd13a0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+                 │         │      └ {'url': 'https://www.upwork.com/nx/search/jobs/?nbs=1&q=mvp'}
+                 │         └ <function get_list_jobs_upwork at 0x165e004a0>
+                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(PydanticUndefined), name='url', mode='validation')], head...
+
+> File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/api/api_v1/endpoints.py", line 11, in get_list_jobs_upwork
+    return await get_info_list(url=url)
+                 │                 └ 'https://www.upwork.com/nx/search/jobs/?nbs=1&q=mvp'
+                 └ <function get_info_list at 0x1651a5760>
+
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/core.py", line 129, in get_info_list
+    browser = await plw.chromium.launch(headless=False)
+                    │   └ <property object at 0x11c4e6930>
+                    └ <playwright._impl._playwright.Playwright object at 0x165fe4f80>
+
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 14119, in launch
+    await self._impl_obj.launch(
+          │    │         └ <function BrowserType.launch at 0x11c4bade0>
+          │    └ <BrowserType name=chromium executable_path=/Users/evgenijkukuskin/Library/Caches/ms-playwright/chromium-1129/chrome-mac/Chrom...
+          └ <BrowserType name=chromium executable_path=/Users/evgenijkukuskin/Library/Caches/ms-playwright/chromium-1129/chrome-mac/Chrom...
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/playwright/_impl/_browser_type.py", line 95, in launch
+    Browser, from_channel(await self._channel.send("launch", params))
+    │        │                  │    │        │              └ {'headless': False}
+    │        │                  │    │        └ <function Channel.send at 0x11c3aade0>
+    │        │                  │    └ <playwright._impl._connection.Channel object at 0x165fe5100>
+    │        │                  └ <BrowserType name=chromium executable_path=/Users/evgenijkukuskin/Library/Caches/ms-playwright/chromium-1129/chrome-mac/Chrom...
+    │        └ <function from_channel at 0x11bf80fe0>
+    └ <class 'playwright._impl._browser.Browser'>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+                 │    │           └ <function Connection.wrap_api_call at 0x11c3ccd60>
+                 │    └ <playwright._impl._connection.Connection object at 0x165fbddc0>
+                 └ <playwright._impl._connection.Channel object at 0x165fe5100>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+          │                       └ {'frames': [{'file': '/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/core.py', 'line': 129, 'column': 0, 'function': 'get...
+          └ <function rewrite_error at 0x11bf80400>
+
+playwright._impl._errors.Error: BrowserType.launch: Executable doesn't exist at /Users/evgenijkukuskin/Library/Caches/ms-playwright/chromium-1129/chrome-mac/Chromium.app/Contents/MacOS/Chromium
+╔════════════════════════════════════════════════════════════╗
+║ Looks like Playwright was just installed or updated.       ║
+║ Please run the following command to download new browsers: ║
+║                                                            ║
+║     playwright install                                     ║
+║                                                            ║
+║ <3 Playwright Team                                         ║
+╚════════════════════════════════════════════════════════════╝
+2024-09-12 17:15:45.622 | ERROR    | api.api_v1.endpoints:get_list_jobs_upwork:13 - BrowserType.launch: Executable doesn't exist at /Users/evgenijkukuskin/Library/Caches/ms-playwright/chromium-1129/chrome-mac/Chromium.app/Contents/MacOS/Chromium
+╔════════════════════════════════════════════════════════════╗
+║ Looks like Playwright was just installed or updated.       ║
+║ Please run the following command to download new browsers: ║
+║                                                            ║
+║     playwright install                                     ║
+║                                                            ║
+║ <3 Playwright Team                                         ║
+╚════════════════════════════════════════════════════════════╝
+Traceback (most recent call last):
+
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/main.py", line 16, in <module>
+    uvicorn.run(app, host="0.0.0.0", port=7618)
+    │       │   └ <fastapi.applications.FastAPI object at 0x105166810>
+    │       └ <function run at 0x165ed19e0>
+    └ <module 'uvicorn' from '/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/uvicorn/__init_...
+
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/uvicorn/main.py", line 577, in run
+    server.run()
+    │      └ <function Server.run at 0x165ed1bc0>
+    └ <uvicorn.server.Server object at 0x165f1b3e0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           │       │   │    │             └ None
+           │       │   │    └ <function Server.serve at 0x165ed1c60>
+           │       │   └ <uvicorn.server.Server object at 0x165f1b3e0>
+           │       └ <function run at 0x1056a1f80>
+           └ <module 'asyncio' from '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/__init__.py'>
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x165ef1d20>
+           │      └ <function Runner.run at 0x105739b20>
+           └ <asyncio.runners.Runner object at 0x11c446900>
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at /Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/pyth...
+           │    │     └ <method 'run_until_complete' of 'uvloop.loop.Loop' objects>
+           │    └ <uvloop.Loop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x11c446900>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x104f93110>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a40>>
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x105166810>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x104f93110>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a40>>
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a40>>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x165fbc5c0>
+          └ <fastapi.applications.FastAPI object at 0x105166810>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x166447560>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x165fbc590>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x165fbc5c0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x166447560>
+          │                            │    │    │     │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a...
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x165fe7ad0>
+          │                            │    └ <fastapi.routing.APIRouter object at 0x165beffe0>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x165fbc590>
+          └ <function wrap_app_handling_exceptions at 0x165b96ac0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 51, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x166447880>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          └ <fastapi.routing.APIRouter object at 0x165beffe0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x166447880>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x165beffe0>>
+          └ <fastapi.routing.APIRouter object at 0x165beffe0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x166447880>
+          │     │      │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a...
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │     └ <function Route.handle at 0x165bd02c0>
+          └ APIRoute(path='/list_jobs', name='get_list_jobs_upwork', methods=['GET'])
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x166447880>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │    └ <function request_response.<locals>.app at 0x165f0ec00>
+          └ APIRoute(path='/list_jobs', name='get_list_jobs_upwork', methods=['GET'])
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x166447880>
+          │                            │    │        │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a...
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x165fe7d40>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x166447920>
+          └ <function wrap_app_handling_exceptions at 0x165b96ac0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 51, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x166447a60>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x165fe7a...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.4'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7618), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x166447920>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x165fe7d40>
+                     └ <function get_request_handler.<locals>.app at 0x165f0eb60>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x165bd13a0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+                 │         │      └ {'url': 'https://www.upwork.com/nx/search/jobs/?nbs=1&q=mvp'}
+                 │         └ <function get_list_jobs_upwork at 0x165e004a0>
+                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(PydanticUndefined), name='url', mode='validation')], head...
+
+> File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/api/api_v1/endpoints.py", line 11, in get_list_jobs_upwork
+    return await get_info_list(url=url)
+                 │                 └ 'https://www.upwork.com/nx/search/jobs/?nbs=1&q=mvp'
+                 └ <function get_info_list at 0x1651a5760>
+
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/core.py", line 129, in get_info_list
+    browser = await plw.chromium.launch(headless=False)
+                    │   └ <property object at 0x11c4e6930>
+                    └ <playwright._impl._playwright.Playwright object at 0x1665194f0>
+
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 14119, in launch
+    await self._impl_obj.launch(
+          │    │         └ <function BrowserType.launch at 0x11c4bade0>
+          │    └ <BrowserType name=chromium executable_path=/Users/evgenijkukuskin/Library/Caches/ms-playwright/chromium-1129/chrome-mac/Chrom...
+          └ <BrowserType name=chromium executable_path=/Users/evgenijkukuskin/Library/Caches/ms-playwright/chromium-1129/chrome-mac/Chrom...
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/playwright/_impl/_browser_type.py", line 95, in launch
+    Browser, from_channel(await self._channel.send("launch", params))
+    │        │                  │    │        │              └ {'headless': False}
+    │        │                  │    │        └ <function Channel.send at 0x11c3aade0>
+    │        │                  │    └ <playwright._impl._connection.Channel object at 0x165fbd7c0>
+    │        │                  └ <BrowserType name=chromium executable_path=/Users/evgenijkukuskin/Library/Caches/ms-playwright/chromium-1129/chrome-mac/Chrom...
+    │        └ <function from_channel at 0x11bf80fe0>
+    └ <class 'playwright._impl._browser.Browser'>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+                 │    │           └ <function Connection.wrap_api_call at 0x11c3ccd60>
+                 │    └ <playwright._impl._connection.Connection object at 0x1651b5940>
+                 └ <playwright._impl._connection.Channel object at 0x165fbd7c0>
+  File "/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+          │                       └ {'frames': [{'file': '/Users/evgenijkukuskin/Documents/Apps/upwork_bot 2/core.py', 'line': 129, 'column': 0, 'function': 'get...
+          └ <function rewrite_error at 0x11bf80400>
+
+playwright._impl._errors.Error: BrowserType.launch: Executable doesn't exist at /Users/evgenijkukuskin/Library/Caches/ms-playwright/chromium-1129/chrome-mac/Chromium.app/Contents/MacOS/Chromium
+╔════════════════════════════════════════════════════════════╗
+║ Looks like Playwright was just installed or updated.       ║
+║ Please run the following command to download new browsers: ║
+║                                                            ║
+║     playwright install                                     ║
+║                                                            ║
+║ <3 Playwright Team                                         ║
+╚════════════════════════════════════════════════════════════╝
