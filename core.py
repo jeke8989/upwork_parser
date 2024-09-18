@@ -413,21 +413,23 @@ async def post_bubble_job_add(host: str, api_key: str, token_bubble: str, job: d
 #------------------------Уведомления----------------------------
 #Отправка Telegram уведомление
 async def send_telegram(tg_chat_id: str, job: dict, subs: dict):
-    url = f"https://www.upwork.com/freelance-jobs/apply{job['link']}"
+    link_jon = job.get('link')
+    job_link = str(link_jon).replace('jobs/', "").split("/?")[0]
+    url = f"https://www.upwork.com/freelance-jobs/apply{job_link}"
     keybord = await create_btn(url)
     text = f"""New JOB Upwork\n\n<b>{job["title"]}</b>\n\n<i>{job["price"]}</i>\n\n{job['description']}\n\n<i>Posted date: {job.get('posted_date')}</i>\n\n\n<b>Subscription ID: {subs['response']['sub_id']}</b>\nSubscription Link: {subs['response']['sub_link']}"""
     await config.bot.send_message(chat_id=tg_chat_id, text=text, reply_markup=keybord, parse_mode = "HTML")
 
 #Нотификации
 async def send_notification(job: dict, subs: dict):
-        email = subs["response"]["email"]
+        email = subs.get("response", {}).get("email")
         if email != "empty":
             try:
                 await send_email(job=job, subs=subs)
                 logging.info(f"Email успешно отправлен на {email}.")
             except Exception as e:
                 logging.error(f"Ошибка при отправке email на {email}: {e}")
-        tg = subs["response"]["tg_bot_id"]
+        tg = subs.get("response", {}).get("tg_bot_id")
         if tg != "empty":
             try:    
                 await send_telegram(tg_chat_id=tg, job=job, subs=subs)
@@ -535,7 +537,7 @@ async def event_job_subscription(link_subs: str, version: str, api_key: str, hos
             subs = await get_bubble_job_request(host_url=host_url, api_key=api_key,link=link_subs)
         except Exception as e:
             logging.error(f"Не смогли получить даннеые из Bubble {link_subs}: {e}")
-        if subs["response"]["subscription_status"] == "STOP":
+        if subs.get("response", {}).get("subscription_status") != "ACTIVE":
             break
         
         token_bubble = config.token_bubble
