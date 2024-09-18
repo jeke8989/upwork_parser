@@ -10,13 +10,27 @@ from selenium.webdriver.chrome.options import Options
 from playwright.async_api import async_playwright
 from playwright_stealth.stealth import stealth_async
 from soupsieve import select_one
+import os
+from dotenv import load_dotenv
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 from config import bot
+import config
 from keybods import create_btn
 from upwork.models import Job, Job_Advance, Client
 from typing import List
+import json
+import logging
+
+# Настройка логирования
+logging.basicConfig(level=logging.INFO)
+# Получение окружения
+load_dotenv('.env')
 
 
+#------------------------Парсинг Upwork----------------------------
 # Запрашиваем работы из Upwork списком
 async def get_info_list_upwork(url: str):
     driver = webdriver.Chrome()
@@ -54,7 +68,6 @@ async def get_info_list_upwork(url: str):
         )
 
     driver.close()
-
 
 # Получаем лист работ в класссе Job
 async def get_info_list_old(url: str):
@@ -100,8 +113,7 @@ async def get_info_list_old(url: str):
     driver.close()
     return job_list
 
-
-async def get_info_list(url: str):
+async def get_info_list(url: str) -> dict:
     proxy = "http://185.162.130.85:10005"
     proxy_username = "JfhR3aez3sSp"
     proxy_password = "RNW78Fm5"
@@ -151,9 +163,8 @@ async def get_info_list(url: str):
 
     return job_list
 
-
 # Получаем данные по одной работе
-async def get_single_job_old(url: str):
+async def get_single_job_old(url: str) -> dict:
     chrome_options = Options()
 
     chrome_options.add_argument("--headless=new")
@@ -229,7 +240,7 @@ async def get_single_job_old(url: str):
     return job_advance.to_dict()
 
 
-async def get_single_job(url: str):
+async def get_single_job(url: str) -> dict:
     proxy = "http://185.162.130.85:10005"
     proxy_username = "JfhR3aez3sSp"
     proxy_password = "RNW78Fm5"
@@ -312,3 +323,152 @@ async def get_single_job(url: str):
     )
 
     return job_advance.to_dict()
+#------------------------Запросы в Bubble----------------------------
+
+#Запрос работ в Bubble по API ключу
+    """_subs: - dict - example_
+    {
+    "status": "success",
+    "response": {
+        "stasus": 200,
+        "jobs": [
+            {
+                "Created Date": 1726610370469,
+                "Subscribe": "1726609240472x770120660674471300",
+                "Created By": "admin_user_web-scraping-gdn_test",
+                "Modified Date": 1726610370470,
+                "client_job_info": "323",
+                "client_job_rate": "32",
+                "client_location": "323",
+                "description": "323",
+                "link": "323",
+                "location_freelancer": "32",
+                "posted_date": "323",
+                "price": "32",
+                "title": "323",
+                "_id": "1726610370468x816143841096277400"
+            }
+        ],
+        "sub_link": "https://www.upwork.com/nx/search/jobs/?q=bubble",
+        "sub_id": "42452523",
+        "subscription_status": "ACTIVE",
+        "send_email": false
+    }
+}
+    """
+
+#------------------------Bubble Requests----------------------------
+
+async def get_bubble_job_request(host_url: str, api_key: str, token_bubble: str, link: str) -> dict:
+
+    async with aiohttp.ClientSession() as session:
+        header ={
+            'Authorization': f'Bearer {token_bubble}',
+            'Content-Type': 'application/json'
+        }
+        param = {
+            'api_key': api_key,
+            'link': link
+        }
+        try:
+            async with session.get(host_url, headers=header, params=param) as respose:
+                respose.raise_for_status()
+                data = await respose.json()
+                return data
+        except aiohttp.ClientError as e:
+            print(f"HTTP error: {e}")
+            return None  # Возвращаем None в случае ошибки
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None  # Возвращаем None в случае ошибки
+
+
+#------------------------Уведомления----------------------------
+#Отправка Telegram уведомление
+async def send_telegram(tg_chat_id: str, job: dict, subs: dict):
+    url = job['link']
+    keybord = await create_btn(url)
+    text = f"""New JOB Upwork\n\n<b>{job["title"]}</b>\n\n<i>{job["price"]}</i>\n\n{job['description']}\n\n<i>Posted date: {job['posted_date']}</i>\n\n\n<b>Subscription ID: {subs['response']['sub_id']}</b>\nSubscription Link: {subs['response']['sub_link']}"""
+    await config.bot.send_message(chat_id=tg_chat_id, text=text, reply_markup=keybord, parse_mode = "HTML")
+
+#Нотификации
+async def send_notification(email: str, job: dict, subs: dict, tg_bot_id: str = ""):
+        try:
+            await send_email(to_email=email, job=job, subs=subs)
+            logging.info(f"Email успешно отправлен на {email}.")
+        except Exception as e:
+            logging.error(f"Ошибка при отправке email на {email}: {e}")
+        try:    
+            if tg_bot_id != "":
+                await send_telegram(tg_chat_id=tg_bot_id, job=job, subs=subs)
+                logging.info(f"Telegram уведомление успешно отправлено в чат {tg_bot_id}.")
+        except Exception as e:
+            logging.error(f"Ошибка при отправке Telegram уведомления в чат {tg_bot_id}: {e}")
+
+#Отправка Емаил
+async def send_email(job: dict, subs: dict, to_email: str):
+
+    # Настройки
+    from_email = os.getenv("FROM_EMAIL")  # Ваш адрес электронной почты
+    password = os.getenv("APP_GOOGLE_PASSWORD")  # Ваш пароль (или токен приложения)
+    subject = "New Job Upwork"
+    body = f"""Job name: {job["title"]}\n\n
+                Job Description: {job['description']}\n\n
+                Job Price: {job["price"]}
+    """
+    # Создание сообщения
+    msg = MIMEMultipart()
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+
+    # Добавление текста в сообщение
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        # Подключение к серверу Gmail
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()  # Начало шифрования
+        server.login(from_email, password)  # Аутентификация
+
+        # Отправка сообщения
+        server.send_message(msg)
+        print("Email sent successfully!")
+
+    except Exception as e:
+        print(f"Error occurred: {e}")
+
+    finally:
+        server.quit()  # Закрытие соединения
+
+
+#------------------------Локика Зацикливания Уведомлений----------------------------
+
+
+#Создание подписки на Работу Upwork
+async def event_job_subscription(url: str, version: str, link: str, api_key: str):
+    while True:
+        new_data = await get_info_list(url)
+        email_subscriber = new_data["email"]
+        tg_bot_id = new_data["tg_bot_id"]
+        if new_data["subscription_status"] == "STOP":
+            break
+        # Логика проверки на новые данные
+        token_bubble = os.getenv('TOKEN_BUBBLE')
+        host_url = f"https://web-scraping-gdn.bubbleapps.io/version-{version}/api/1.1/wf/get_jobs"
+        old_data = await get_bubble_job_request(host_url=host_url, api_key=api_key, token_bubble=token_bubble,link=link)
+        # Проверяем наличие новых объектов по полю "link"
+        data_notification = []
+        if old_data:
+            old_links = {jobs['link'] for jobs in old_data}
+            # Фильтруем новые данные
+            for job in new_data:
+                if job[' link'].strip() not in old_links:  # Проверяем, есть ли ссылка в old_links
+                    data_notification.append(job)  # Добавляем новые объекты в data_notification
+                    # Здесь можно обработать data_notification (например, отправить уведомление)
+                    await send_notification(email=email_subscriber, tg_bot_id=tg_bot_id, job=job)
+                    
+       
+        # Задержка перед следующим запросом
+        await asyncio.sleep(config.duration)  # Задержка перед следующим запросом
+

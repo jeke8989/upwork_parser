@@ -23,3 +23,13 @@ async def get_job_upwork(url: str):
         logger.exception(e)
         msg = f"error: {e.__class__.__name__}. message: {e}. traceback: {traceback.format_exc()}"
         return {"ok": False, "message": msg}
+    
+
+@router.get('/set_subscription')
+async def get_list_jobs_upwork(url: str, api_key: str):
+    try:
+        return await get_info_list(url=url)
+    except Exception as e:
+        logger.exception(e)
+        msg = f"error: {e.__class__.__name__}. message: {e}. traceback: {traceback.format_exc()}"
+        return {"ok": False, "message": msg}
