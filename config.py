@@ -8,3 +8,6 @@ bot = Bot(token)
 
 token_bubble =  os.getenv("TOKEN_BUBBLE")
 duration = os.getenv("DURATION")
+from_email = os.getenv("FROM_EMAIL")
+gmail_pasword = os.getenv("APP_GOOGLE_PASSWORD")
+

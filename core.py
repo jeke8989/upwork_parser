@@ -25,7 +25,12 @@ import json
 import logging
 
 # Настройка логирования
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,  # Уровень логирования
+    filename="py_log.log",  # Имя файла для записи логов
+    filemode="w",  # Режим записи: 'w' для перезаписи, 'a' для добавления
+    format="%(asctime)s %(levelname)s %(message)s"  # Формат сообщений
+)
 # Получение окружения
 load_dotenv('.env')
 
@@ -359,11 +364,12 @@ async def get_single_job(url: str) -> dict:
 
 #------------------------Bubble Requests----------------------------
 
-async def get_bubble_job_request(host_url: str, api_key: str, token_bubble: str, link: str) -> dict:
-
+async def get_bubble_job_request(host_url: str, api_key: str, link: str) -> dict:
+    host_url_job = f"{host_url}get_jobs"
+    bubble_token = config.token_bubble
     async with aiohttp.ClientSession() as session:
         header ={
-            'Authorization': f'Bearer {token_bubble}',
+            'Authorization': f'Bearer {bubble_token}',
             'Content-Type': 'application/json'
         }
         param = {
@@ -371,10 +377,31 @@ async def get_bubble_job_request(host_url: str, api_key: str, token_bubble: str,
             'link': link
         }
         try:
-            async with session.get(host_url, headers=header, params=param) as respose:
+            async with session.get(host_url_job, headers=header, params=param) as respose:
                 respose.raise_for_status()
                 data = await respose.json()
                 return data
+        except aiohttp.ClientError as e:
+            return logging.error(f"{e}")
+        except Exception as e:
+            return logging.error(f"{e}")
+
+#Запись новых работ в базу данных
+async def post_bubble_job_add(host: str, api_key: str, token_bubble: str, job: dict):
+    host_url_job = f"{host}create_job"
+    async with aiohttp.ClientSession() as session:
+        headers ={
+            'Authorization': f'Bearer {token_bubble}',
+            'Content-Type': 'application/json'
+        }
+        data = {
+            'api_key': api_key,
+            'job': job
+        }
+        try:
+            async with session.post(url=host_url_job, headers=headers, json=data) as response:
+                response.raise_for_status()  # Проверяем статус ответа
+                return await response.json()  # Возвращаем JSON-ответ
         except aiohttp.ClientError as e:
             print(f"HTTP error: {e}")
             return None  # Возвращаем None в случае ошибки
@@ -386,31 +413,34 @@ async def get_bubble_job_request(host_url: str, api_key: str, token_bubble: str,
 #------------------------Уведомления----------------------------
 #Отправка Telegram уведомление
 async def send_telegram(tg_chat_id: str, job: dict, subs: dict):
-    url = job['link']
+    url = f"https://www.upwork.com/freelance-jobs/apply{job['link']}"
     keybord = await create_btn(url)
-    text = f"""New JOB Upwork\n\n<b>{job["title"]}</b>\n\n<i>{job["price"]}</i>\n\n{job['description']}\n\n<i>Posted date: {job['posted_date']}</i>\n\n\n<b>Subscription ID: {subs['response']['sub_id']}</b>\nSubscription Link: {subs['response']['sub_link']}"""
+    text = f"""New JOB Upwork\n\n<b>{job["title"]}</b>\n\n<i>{job["price"]}</i>\n\n{job['description']}\n\n<i>Posted date: {job.get('posted_date')}</i>\n\n\n<b>Subscription ID: {subs['response']['sub_id']}</b>\nSubscription Link: {subs['response']['sub_link']}"""
     await config.bot.send_message(chat_id=tg_chat_id, text=text, reply_markup=keybord, parse_mode = "HTML")
 
 #Нотификации
-async def send_notification(email: str, job: dict, subs: dict, tg_bot_id: str = ""):
-        try:
-            await send_email(to_email=email, job=job, subs=subs)
-            logging.info(f"Email успешно отправлен на {email}.")
-        except Exception as e:
-            logging.error(f"Ошибка при отправке email на {email}: {e}")
-        try:    
-            if tg_bot_id != "":
-                await send_telegram(tg_chat_id=tg_bot_id, job=job, subs=subs)
-                logging.info(f"Telegram уведомление успешно отправлено в чат {tg_bot_id}.")
-        except Exception as e:
-            logging.error(f"Ошибка при отправке Telegram уведомления в чат {tg_bot_id}: {e}")
+async def send_notification(job: dict, subs: dict):
+        email = subs["response"]["email"]
+        if email != "empty":
+            try:
+                await send_email(job=job, subs=subs)
+                logging.info(f"Email успешно отправлен на {email}.")
+            except Exception as e:
+                logging.error(f"Ошибка при отправке email на {email}: {e}")
+        tg = subs["response"]["tg_bot_id"]
+        if tg != "empty":
+            try:    
+                await send_telegram(tg_chat_id=tg, job=job, subs=subs)
+                logging.info(f"Telegram уведомление успешно отправлено в чат {tg}.")
+            except Exception as e:
+                logging.error(f"Ошибка при отправке Telegram уведомления в чат {tg}: {e}")
 
 #Отправка Емаил
-async def send_email(job: dict, subs: dict, to_email: str):
+async def send_email(job: dict, subs: dict):
 
     # Настройки
-    from_email = os.getenv("FROM_EMAIL")  # Ваш адрес электронной почты
-    password = os.getenv("APP_GOOGLE_PASSWORD")  # Ваш пароль (или токен приложения)
+    from_email = config.from_email  # Ваш адрес электронной почты
+    password = config.gmail_pasword  # Ваш пароль (или токен приложения)
     subject = "New Job Upwork"
     body = f"""Job name: {job["title"]}\n\n
                 Job Description: {job['description']}\n\n
@@ -419,7 +449,7 @@ async def send_email(job: dict, subs: dict, to_email: str):
     # Создание сообщения
     msg = MIMEMultipart()
     msg['From'] = from_email
-    msg['To'] = to_email
+    msg['To'] = subs['email']
     msg['Subject'] = subject
 
     # Добавление текста в сообщение
@@ -446,29 +476,97 @@ async def send_email(job: dict, subs: dict, to_email: str):
 
 
 #Создание подписки на Работу Upwork
-async def event_job_subscription(url: str, version: str, link: str, api_key: str):
+async def event_job_subscription(link_subs: str, version: str, api_key: str, host: str, endpoint: str = ""):
+    """_summary_
+    {
+    "status": "success",
+    "response": {
+        "stasus": 200,
+        "jobs": [
+            {
+                "Created Date": 1726610370469,
+                "Subscribe": "1726609240472x770120660674471300",
+                "Created By": "admin_user_web-scraping-gdn_test",
+                "Modified Date": 1726610370470,
+                "client_job_info": "323",
+                "client_job_rate": "32",
+                "client_location": "323",
+                "description": "323",
+                "link": "323",
+                "location_freelancer": "32",
+                "posted_date": "323",
+                "price": "32",
+                "title": "323",
+                "_id": "1726610370468x816143841096277400"
+            }
+        ],
+        "sub_link": "https://www.upwork.com/nx/search/jobs/?q=bubble",
+        "sub_id": "42452523",
+        "subscription_status": "ACTIVE",
+        "send_email": False
+    }
+}
+    
+    new_data = [
+    {
+        "title": "No Code and Automation Web App Development",
+        "description": "I am looking to start building a no code MVP starting with a very specific and simple solution for a business I am supporting. \n\nIt involves building a process to track, review, and approve actions.\n\nFull details and scope can be viewed here: https://docs.google.com/document/d/1M366JPNtbA1z62RiyebE8DTLJX3BKJG94s9CT5I2IWo/edit",
+        "price": "Hourly: $10.00 - $40.00 ",
+        "link": "/jobs/Code-and-Automation-Web-App-Development_~021836328526713298158/?referrer_url_path=/nx/search/jobs/"
+    },
+    {
+        "title": "Bubble.io Developer for Custom CRM",
+        "description": "Project Description\nThe mobile application will leverage Bubble.io to educate people with no business background but having visionary ideas through step by step interactive training modules  featuring animated videos. Users will engage with these tasks by implementing them in their own environments and submitting their assignments through the app. The application will also integrate a backend system for customer relationship management (CRM) and database functionalities, ensuring efficient tracking of user progress and task completion.\n\nKey Features\n1.\tAnimated Training Modules: Users will view animated videos for each task, created using Bubble's design tools.\n2.\tTask Implementation: Users can implement tasks on their own and submit assignments via the app's user-friendly interface.\n3.\tExcel Template Management: Each task will include an Excel template that users can fill out and upload through the app.\n4.\tBackend CRM: A robust backend system built on Bubble to manage user data, track progress, and provide analytics.\n5.\tResponsive Design: The app will be optimized for mobile use, ensuring a seamless experience on various devices.\nRequirement Description\nFunctional Requirements\n1.\tUser Authentication:\n•\tImplement user registration and login functionalities using Bubble's built-in authentication features.\n•\tSupport for social media login options if desired.\n2.\tTask Management:\n•\tAbility to browse tasks, displayed in a mobile-friendly format.\n•\tIntegration of animated videos for each task using Bubble's video elements.\n3.\tAssignment Submission:\n•\tUsers can upload completed Excel templates directly through the app.\n•\tProvide submission confirmation and feedback mechanisms.\n4.\tProgress Tracking:\n•\tDashboard for users to view completed tasks and assignments, utilizing Bubble's data display capabilities.\n•\tVisual representation of progress through charts or graphs created within Bubble.\n5.\tNotifications:\n•\tPush notifications for new tasks, reminders for pending assignments, and updates using Bubble's notification features.\nNon-Functional Requirements\n1.\tPerformance:\n•\tThe app should load content quickly, ideally within 2 seconds, leveraging Bubble's optimization tools.\nSecurity:\n•\tEnsure user data is encrypted during transmission and storage using Bubble's security features.\n•\tCompliance with data protection regulations (e.g., GDPR).\nUsability:\n•\tThe interface must be intuitive, designed with responsive editing in Bubble to accommodate various screen sizes.\nCompatibility:\n•\tThe app should be compatible with both iOS and Android platforms through wrapping solutions like BDK or Natively if necessary.\nTechnical Requirements\nDevelopment Tools:\nUtilize Bubble.io as the primary development platform for building both web and mobile components of the app.\nMobile Wrapping Solutions:\nConsider using wrappers like BDK or Natively to convert the Bubble web app into a native mobile app for distribution on app stores if needed.\nAPIs:\nIntegrate necessary APIs for handling file uploads (Excel templates) securely within the Bubble environment.\nTesting:\nImplement a testing strategy that includes unit tests, integration tests, and user acceptance testing (UAT) within the Bubble framework.",
+        "price": "Hourly",
+        "link": "/jobs/span-class-highlight-Bubble-span-Developer-for-Custom-CRM_~021836324357197634798/?referrer_url_path=/nx/search/jobs/"
+    },
+
+    Args:
+        url (str): _description_
+        version (str): _description_
+        link (str): _description_
+        api_key (str): _description_
+    """
     while True:
-        new_data = await get_info_list(url)
-        email_subscriber = new_data["email"]
-        tg_bot_id = new_data["tg_bot_id"]
-        if new_data["subscription_status"] == "STOP":
+        logging.info(f"Начался цикл с подпиской")
+        #Получение данных из Bubble
+        host_url = f"{host}/version-{version}/api/1.1/wf/"
+        try:
+            subs = await get_bubble_job_request(host_url=host_url, api_key=api_key,link=link_subs)
+        except Exception as e:
+            logging.error(f"Не смогли получить даннеые из Bubble {link_subs}: {e}")
+        if subs["response"]["subscription_status"] == "STOP":
             break
-        # Логика проверки на новые данные
-        token_bubble = os.getenv('TOKEN_BUBBLE')
-        host_url = f"https://web-scraping-gdn.bubbleapps.io/version-{version}/api/1.1/wf/get_jobs"
-        old_data = await get_bubble_job_request(host_url=host_url, api_key=api_key, token_bubble=token_bubble,link=link)
-        # Проверяем наличие новых объектов по полю "link"
+        
+        token_bubble = config.token_bubble
         data_notification = []
-        if old_data:
-            old_links = {jobs['link'] for jobs in old_data}
+        #Получение данных из Upwork
+        try:
+            new_data = await get_info_list(link_subs)
+        except Exception as e:
+            logging.error(f"Не смогли получить даннеые из Upwork: {e}")
+            new_data = []
+        
+    
+        # Проверяем наличие новых объектов по полю "link"
+        
+        if subs:
+            old_links = {jobs['link'] for jobs in subs["response"]["jobs"]}
             # Фильтруем новые данные
-            for job in new_data:
-                if job[' link'].strip() not in old_links:  # Проверяем, есть ли ссылка в old_links
-                    data_notification.append(job)  # Добавляем новые объекты в data_notification
+            for job_new in new_data:
+                if job_new['link'] not in old_links:  # Проверяем, есть ли ссылка в old_links
+                    data_notification.append(job_new)  # Добавляем новые объекты в data_notification
                     # Здесь можно обработать data_notification (например, отправить уведомление)
-                    await send_notification(email=email_subscriber, tg_bot_id=tg_bot_id, job=job)
+                    try:
+                        await post_bubble_job_add(host=host_url, api_key=api_key, token_bubble=token_bubble, job=job_new)
+                        logging.info(f"Работа добавлена: {job_new}")
+                    except Exception as e:
+                        logging.error(f"Не смогли добавить работу: {e}")    
+                    await send_notification(job=job_new, subs=subs)
                     
-       
+                   
+        duration = int(config.duration)
         # Задержка перед следующим запросом
-        await asyncio.sleep(config.duration)  # Задержка перед следующим запросом
+        logging.info(f"Цикл успешно закончился подписка: {subs['response']['sub_id']}")
+        await asyncio.sleep(duration)  # Задержка перед следующим запросом
 
