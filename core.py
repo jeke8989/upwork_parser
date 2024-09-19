@@ -23,15 +23,17 @@ from keybods import create_btn
 from upwork.models import Job, Job_Advance, Client
 from typing import List
 import json
-import logging
+from loguru import logger as logging
 
 # Настройка логирования
-logging.basicConfig(
-    level=logging.INFO,  # Уровень логирования
-    filename="py_log.log",  # Имя файла для записи логов
-    filemode="w",  # Режим записи: 'w' для перезаписи, 'a' для добавления
-    format="%(asctime)s %(levelname)s %(message)s"  # Формат сообщений
-)
+logging.add("py_log.log", level="DEBUG")
+
+# logging.basicConfig(
+#     level=logging.INFO,  # Уровень логирования
+#     filename="py_log.log",  # Имя файла для записи логов
+#     filemode="w",  # Режим записи: 'w' для перезаписи, 'a' для добавления
+#     format="%(asctime)s %(levelname)s %(message)s"  # Формат сообщений
+# )
 # Получение окружения
 load_dotenv('.env')
 
@@ -442,7 +444,7 @@ async def send_email(job: dict, subs: dict):
     # Создание сообщения
     msg = MIMEMultipart()
     msg['From'] = from_email
-    msg['To'] = subs['email']
+    msg['To'] = subs['response']['email']
     msg['Subject'] = subject
 
     # Добавление текста в сообщение
@@ -484,7 +486,7 @@ async def start_subscription():
     for sub in subs:
         link = sub.get("link")
         api_key = sub.get("api-key")
-        await event_job_subscription(link_subs=link,version=config.version, api_key=api_key, host=config.host_url)
+        asyncio.create_task(event_job_subscription(link_subs=link,version=config.version, api_key=api_key, host=config.host_url))
         
     
 
