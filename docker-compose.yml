@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
     ports:
       - "7618:7618"
     command: xvfb-run -a python main.py
