@@ -3,7 +3,8 @@ import asyncio
 import config
 import json
 from keybods import create_btn
-from core import event_job_subscription, post_bubble_job_add
+from core import event_job_subscription, post_bubble_job_add, send_endpoint, start_subscription
+from database.data_bubble import get_activity_sub
 
 
 
@@ -74,11 +75,11 @@ async def send_telegram(tg_chat_id: str, job: dict, subs: dict):
 
 
 async def main():
-    n = await event_job_subscription(link_subs=link, version="test", api_key="1111", host=host)
-    print(n)
+    nan = await get_activity_sub()
+    print(json.dumps(nan, indent=2, ensure_ascii=False))
    
 
     
-    
+     
 if __name__ == "__main__":
     asyncio.run(main())

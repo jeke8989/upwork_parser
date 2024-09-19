@@ -17,6 +17,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 from config import bot
+from database.data_bubble import get_activity_sub, get_bubble_job_request, post_bubble_job_add
 import config
 from keybods import create_btn
 from upwork.models import Job, Job_Advance, Client
@@ -362,54 +363,6 @@ async def get_single_job(url: str) -> dict:
 }
     """
 
-#------------------------Bubble Requests----------------------------
-
-async def get_bubble_job_request(host_url: str, api_key: str, link: str) -> dict:
-    host_url_job = f"{host_url}get_jobs"
-    bubble_token = config.token_bubble
-    async with aiohttp.ClientSession() as session:
-        header ={
-            'Authorization': f'Bearer {bubble_token}',
-            'Content-Type': 'application/json'
-        }
-        param = {
-            'api_key': api_key,
-            'link': link
-        }
-        try:
-            async with session.get(host_url_job, headers=header, params=param) as respose:
-                respose.raise_for_status()
-                data = await respose.json()
-                return data
-        except aiohttp.ClientError as e:
-            return logging.error(f"{e}")
-        except Exception as e:
-            return logging.error(f"{e}")
-
-#Запись новых работ в базу данных
-async def post_bubble_job_add(host: str, api_key: str, token_bubble: str, job: dict):
-    host_url_job = f"{host}create_job"
-    async with aiohttp.ClientSession() as session:
-        headers ={
-            'Authorization': f'Bearer {token_bubble}',
-            'Content-Type': 'application/json'
-        }
-        data = {
-            'api_key': api_key,
-            'job': job
-        }
-        try:
-            async with session.post(url=host_url_job, headers=headers, json=data) as response:
-                response.raise_for_status()  # Проверяем статус ответа
-                return await response.json()  # Возвращаем JSON-ответ
-        except aiohttp.ClientError as e:
-            print(f"HTTP error: {e}")
-            return None  # Возвращаем None в случае ошибки
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            return None  # Возвращаем None в случае ошибки
-
-
 #------------------------Уведомления----------------------------
 #Отправка Telegram уведомление
 async def send_telegram(tg_chat_id: str, job: dict, subs: dict):
@@ -419,23 +372,61 @@ async def send_telegram(tg_chat_id: str, job: dict, subs: dict):
     keybord = await create_btn(url)
     text = f"""New JOB Upwork\n\n<b>{job["title"]}</b>\n\n<i>{job["price"]}</i>\n\n{job['description']}\n\n<i>Posted date: {job.get('posted_date')}</i>\n\n\n<b>Subscription ID: {subs['response']['sub_id']}</b>\nSubscription Link: {subs['response']['sub_link']}"""
     await config.bot.send_message(chat_id=tg_chat_id, text=text, reply_markup=keybord, parse_mode = "HTML")
+    
+#Отправка Endpoint уведомление
+async def send_endpoint(job: dict, endpoint: str):
+    link_jon = job.get('link')
+    job_link = str(link_jon).replace('jobs/', "").split("/?")[0]
+    url = f"https://www.upwork.com/freelance-jobs/apply{job_link}"
+    async with aiohttp.ClientSession() as session:
+        headers ={
+            'Authorization': f'Bearer {config.token_n8n}',
+            'Content-Type': 'application/json'
+        }
+        data = {
+            'title': job.get("title"),
+            'desctiption': job.get("description"),
+            'price': job.get("price"),
+            'posted_date': job.get("posted_date"),
+            'link': url
+        }
+        try:
+            async with session.post(url=endpoint, headers=headers, json=data) as response:
+                response.raise_for_status()  # Проверяем статус ответа
+                return await response.json()  # Возвращаем JSON-ответ
+        except aiohttp.ClientError as e:
+            print(f"HTTP error: {e}")
+            return None  # Возвращаем None в случае ошибки
+        except Exception as e:
+            pass
+    
 
 #Нотификации
 async def send_notification(job: dict, subs: dict):
-        email = subs.get("response", {}).get("email")
-        if email != "empty":
-            try:
-                await send_email(job=job, subs=subs)
-                logging.info(f"Email успешно отправлен на {email}.")
-            except Exception as e:
-                logging.error(f"Ошибка при отправке email на {email}: {e}")
-        tg = subs.get("response", {}).get("tg_bot_id")
-        if tg != "empty":
-            try:    
-                await send_telegram(tg_chat_id=tg, job=job, subs=subs)
-                logging.info(f"Telegram уведомление успешно отправлено в чат {tg}.")
-            except Exception as e:
-                logging.error(f"Ошибка при отправке Telegram уведомления в чат {tg}: {e}")
+    endpoin = subs.get("response", {}).get("endpoint")
+    
+    if endpoin and endpoin != "empty":
+        try:
+            await send_endpoint(job=job, endpoint=endpoin)
+            logging.info(f"Endpoin успешно отправлен на {endpoin}.")
+        except Exception as e:
+            logging.error(f"Ошибка при отправке Endpoin на {endpoin}: {e}")
+
+    email = subs.get("response", {}).get("email")
+    if email and email != "empty":
+        try:
+            await send_email(job=job, subs=subs)
+            logging.info(f"Email успешно отправлен на {email}.")
+        except Exception as e:
+            logging.error(f"Ошибка при отправке email на {email}: {e}")
+
+    tg = subs.get("response", {}).get("tg_bot_id")
+    if tg and tg != "empty":
+        try:    
+            await send_telegram(tg_chat_id=tg, job=job, subs=subs)
+            logging.info(f"Telegram уведомление успешно отправлено в чат {tg}.")
+        except Exception as e:
+            logging.error(f"Ошибка при отправке Telegram уведомления в чат {tg}: {e}")
 
 #Отправка Емаил
 async def send_email(job: dict, subs: dict):
@@ -475,7 +466,27 @@ async def send_email(job: dict, subs: dict):
 
 
 #------------------------Локика Зацикливания Уведомлений----------------------------
-
+#Запуск подписок в момент запуска программы
+async def start_subscription():
+    """_summary_
+    [
+  {
+    "link": "https://www.upwork.com/nx/search/jobs/?q=bubble",
+    "api-key": "1111"
+  },
+  {
+    "link": "https://www.upwork.com/nx/search/jobs/?nbs=1",
+    "api-key": "2222"
+  }
+]
+    """
+    subs = await get_activity_sub()
+    for sub in subs:
+        link = sub.get("link")
+        api_key = sub.get("api-key")
+        await event_job_subscription(link_subs=link,version=config.version, api_key=api_key, host=config.host_url)
+        
+    
 
 #Создание подписки на Работу Upwork
 async def event_job_subscription(link_subs: str, version: str, api_key: str, host: str, endpoint: str = ""):
@@ -532,7 +543,7 @@ async def event_job_subscription(link_subs: str, version: str, api_key: str, hos
     while True:
         logging.info(f"Начался цикл с подпиской")
         #Получение данных из Bubble
-        host_url = f"{host}/version-{version}/api/1.1/wf/"
+        host_url = f"{host}version-{version}/api/1.1/wf/"
         try:
             subs = await get_bubble_job_request(host_url=host_url, api_key=api_key,link=link_subs)
         except Exception as e:
