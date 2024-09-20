@@ -360,7 +360,8 @@ async def get_single_job(url: str) -> dict:
         "sub_link": "https://www.upwork.com/nx/search/jobs/?q=bubble",
         "sub_id": "42452523",
         "subscription_status": "ACTIVE",
-        "send_email": false
+        "send_email": false,
+        "name": "Python"
     }
 }
     """
@@ -372,7 +373,7 @@ async def send_telegram(tg_chat_id: str, job: dict, subs: dict):
     job_link = str(link_jon).replace('jobs/', "").split("/?")[0]
     url = f"https://www.upwork.com/freelance-jobs/apply{job_link}"
     keybord = await create_btn(url)
-    text = f"""New JOB Upwork\n\n<b>{job["title"]}</b>\n\n<i>{job["price"]}</i>\n\n{job['description']}\n\n<i>Posted date: {job.get('posted_date')}</i>\n\n\n<b>Subscription ID: {subs['response']['sub_id']}</b>\nSubscription Link: {subs['response']['sub_link']}"""
+    text = f"""New JOB Upwork\n\n<b>{job["title"]}</b>\n\n<i>{job["price"]}</i>\n\n{job['description']}\n\n<i>Posted date: {job.get('posted_date')}</i>\n\n\n<b>Subscription ID: {subs['response']['name']}</b>\nSubscription Link: {subs['response']['sub_link']}"""
     await config.bot.send_message(chat_id=tg_chat_id, text=text, reply_markup=keybord, parse_mode = "HTML")
     
 #Отправка Endpoint уведомление
