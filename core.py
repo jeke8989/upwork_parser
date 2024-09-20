@@ -573,7 +573,7 @@ async def event_job_subscription(link_subs: str, version: str, api_key: str, hos
                     data_notification.append(job_new)  # Добавляем новые объекты в data_notification
                     # Здесь можно обработать data_notification (например, отправить уведомление)
                     try:
-                        await post_bubble_job_add(host=host_url, api_key=api_key, token_bubble=token_bubble, job=job_new)
+                        await post_bubble_job_add(host=host_url, api_key=api_key, token_bubble=token_bubble, job=job_new, subs=subs)
                         logging.info(f"Работа добавлена: {job_new}")
                     except Exception as e:
                         logging.error(f"Не смогли добавить работу: {e}")    

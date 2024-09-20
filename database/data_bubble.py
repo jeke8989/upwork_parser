@@ -7,7 +7,7 @@ import json
 
 
 #------------------------Bubble Requests----------------------------
-
+#https://web-scraping-gdn.bubbleapps.io/version-test/api/1.1/wf/create_job/initialize
 #Получение данных по одному юзеру 
 async def get_bubble_job_request(host_url: str, api_key: str, link: str) -> dict:
     host_url_job = f"{host_url}get_jobs"
@@ -31,7 +31,8 @@ async def get_bubble_job_request(host_url: str, api_key: str, link: str) -> dict
             return logging.error(f"{e}")
 
 #Запись новых работ в базу данных
-async def post_bubble_job_add(host: str, api_key: str, token_bubble: str, job: dict):
+async def post_bubble_job_add(host: str, api_key: str, token_bubble: str, job: dict, subs: dict):
+    #host_url_job = "https://web-scraping-gdn.bubbleapps.io/version-test/api/1.1/wf/create_job/initialize"
     host_url_job = f"{host}create_job"
     async with aiohttp.ClientSession() as session:
         headers ={
@@ -40,7 +41,8 @@ async def post_bubble_job_add(host: str, api_key: str, token_bubble: str, job: d
         }
         data = {
             'api_key': api_key,
-            'job': job
+            'job': job,
+            'link': subs['response']['sub_link']
         }
         try:
             async with session.post(url=host_url_job, headers=headers, json=data) as response:
