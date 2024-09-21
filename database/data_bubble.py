@@ -10,18 +10,20 @@ import json
 #https://web-scraping-gdn.bubbleapps.io/version-test/api/1.1/wf/create_job/initialize
 #Получение данных по одному юзеру 
 async def get_bubble_job_request(host_url: str, api_key: str, link: str) -> dict:
-    host_url_job = f"{host_url}get_jobs"
+    version = config.version
+    token = config.token_bubble
+    host_url_job = f"{host_url}version-{version}/api/1.1/wf/get_jobs"
     async with aiohttp.ClientSession() as session:
         header ={
-            'Authorization': f'Bearer {config.token_bubble}',
+            'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
-        param = {
+        params = {
             'api_key': api_key,
             'link': link
         }
         try:
-            async with session.get(host_url_job, headers=header, params=param) as respose:
+            async with session.get(host_url_job, headers=header, params=params) as respose:
                 respose.raise_for_status()
                 data = await respose.json()
                 return data
