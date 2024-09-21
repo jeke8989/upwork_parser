@@ -411,7 +411,7 @@ async def send_notification(job: dict, subs: dict):
     if endpoin and endpoin != "empty":
         try:
             await send_endpoint(job=job, endpoint=endpoin)
-            logging.info(f"Endpoin успешно отправлен на {endpoin}.")
+            logging.info(f"Endpoin успешно отправлен.")
         except Exception as e:
             logging.error(f"Ошибка при отправке Endpoin на {endpoin}: {e}")
 
@@ -574,7 +574,7 @@ async def event_job_subscription(link_subs: str, api_key: str, endpoint: str = "
                     # Здесь можно обработать data_notification (например, отправить уведомление)
                     try:
                         await post_bubble_job_add(api_key=api_key, token_bubble=token_bubble, job=job_new, subs=subs)
-                        logging.info(f"Работа добавлена: {job_new}")
+                        logging.info(f"Работа добавлена")
                     except Exception as e:
                         logging.error(f"Не смогли добавить работу: {e}")    
                     await send_notification(job=job_new, subs=subs)
