@@ -31,7 +31,7 @@ async def get_bubble_job_request(api_key: str, link: str) -> dict:
             return logging.error(f"{e}")
 
 #Запись новых работ в базу данных
-async def post_bubble_job_add(host: str, api_key: str, token_bubble: str, job: dict, subs: dict):
+async def post_bubble_job_add(api_key: str, token_bubble: str, job: dict, subs: dict):
     #host_url_job = "https://web-scraping-gdn.bubbleapps.io/version-test/api/1.1/wf/create_job/initialize"
     host_url_job = f"{config.host_url_restart}create_job"
     async with aiohttp.ClientSession() as session:
