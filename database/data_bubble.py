@@ -9,13 +9,11 @@ import json
 #------------------------Bubble Requests----------------------------
 #https://web-scraping-gdn.bubbleapps.io/version-test/api/1.1/wf/create_job/initialize
 #Получение данных по одному юзеру 
-async def get_bubble_job_request(host_url: str, api_key: str, link: str) -> dict:
-    version = config.version
-    token = config.token_bubble
-    host_url_job = f"{host_url}version-{version}/api/1.1/wf/get_jobs"
+async def get_bubble_job_request(api_key: str, link: str) -> dict:
+    host_url_job = f"{config.host_url_restart}get_jobs"
     async with aiohttp.ClientSession() as session:
         header ={
-            'Authorization': f'Bearer {token}',
+            'Authorization': f'Bearer {config.token_bubble}',
             'Content-Type': 'application/json'
         }
         params = {
@@ -35,7 +33,7 @@ async def get_bubble_job_request(host_url: str, api_key: str, link: str) -> dict
 #Запись новых работ в базу данных
 async def post_bubble_job_add(host: str, api_key: str, token_bubble: str, job: dict, subs: dict):
     #host_url_job = "https://web-scraping-gdn.bubbleapps.io/version-test/api/1.1/wf/create_job/initialize"
-    host_url_job = f"{host}create_job"
+    host_url_job = f"{config.host_url_restart}create_job"
     async with aiohttp.ClientSession() as session:
         headers ={
             'Authorization': f'Bearer {token_bubble}',
@@ -76,7 +74,7 @@ async def get_activity_sub() -> dict:
         _type_: _description_
     """
 
-    host_url_job = f"{config.host_url}version-{config.version}/api/1.1/wf/get_all_status_sub"
+    host_url_job = f"{config.host_url_restart}get_all_status_sub"
     
     
     async with aiohttp.ClientSession() as session:

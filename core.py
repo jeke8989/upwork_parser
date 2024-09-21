@@ -487,12 +487,12 @@ async def start_subscription():
     for sub in subs:
         link = sub.get("link")
         api_key = sub.get("api-key")
-        asyncio.create_task(event_job_subscription(link_subs=link,version=config.version, api_key=api_key, host=config.host_url))
+        asyncio.create_task(event_job_subscription(link_subs=link, api_key=api_key))
         
     
 
 #Создание подписки на Работу Upwork
-async def event_job_subscription(link_subs: str, version: str, api_key: str, host: str, endpoint: str = ""):
+async def event_job_subscription(link_subs: str, api_key: str, endpoint: str = ""):
     """_summary_
     {
     "status": "success",
@@ -546,9 +546,8 @@ async def event_job_subscription(link_subs: str, version: str, api_key: str, hos
     while True:
         logging.info(f"Начался цикл с подпиской")
         #Получение данных из Bubble
-        host_url = f"{host}version-{version}/api/1.1/wf/"
         try:
-            subs = await get_bubble_job_request(host_url=host_url, api_key=api_key,link=link_subs)
+            subs = await get_bubble_job_request(api_key=api_key,link=link_subs)
         except Exception as e:
             logging.error(f"Не смогли получить даннеые из Bubble {link_subs}: {e}")
         if subs.get("response", {}).get("subscription_status") != "ACTIVE":
@@ -574,7 +573,7 @@ async def event_job_subscription(link_subs: str, version: str, api_key: str, hos
                     data_notification.append(job_new)  # Добавляем новые объекты в data_notification
                     # Здесь можно обработать data_notification (например, отправить уведомление)
                     try:
-                        await post_bubble_job_add(host=host_url, api_key=api_key, token_bubble=token_bubble, job=job_new, subs=subs)
+                        await post_bubble_job_add(api_key=api_key, token_bubble=token_bubble, job=job_new, subs=subs)
                         logging.info(f"Работа добавлена: {job_new}")
                     except Exception as e:
                         logging.error(f"Не смогли добавить работу: {e}")    
