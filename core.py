@@ -369,11 +369,12 @@ async def get_single_job(url: str) -> dict:
 #------------------------Уведомления----------------------------
 #Отправка Telegram уведомление
 async def send_telegram(tg_chat_id: str, job: dict, subs: dict):
+    max_length = 3500
     link_jon = job.get('link')
     job_link = str(link_jon).replace('jobs/', "").split("/?")[0]
     url = f"https://www.upwork.com/freelance-jobs/apply{job_link}"
     keybord = await create_btn(url)
-    text = f"""New JOB Upwork\n\n<b>{job["title"]}</b>\n\n<i>{job["price"]}</i>\n\n{job['description']}\n\n<i>Posted date: {job.get('posted_date')}</i>\n\n\n<b>Subscription ID: {subs['response']['name']}</b>\nSubscription Link: {subs['response']['sub_link']}"""
+    text = f"""New JOB Upwork\n\n<b>{job["title"]}</b>\n\n<i>{job["price"]}</i>\n\n{job['description'][0:max_length]}\n\n<i>Posted date: {job.get('posted_date')}</i>\n\n\n<b>Subscription ID: {subs['response']['name']}</b>\nSubscription Link: {subs['response']['sub_link']}"""
     await config.bot.send_message(chat_id=tg_chat_id, text=text, reply_markup=keybord, parse_mode = "HTML")
     
 #Отправка Endpoint уведомление
@@ -494,7 +495,7 @@ async def start_subscription():
 #Создание подписки на Работу Upwork
 async def event_job_subscription(link_subs: str, api_key: str, endpoint: str = ""):
     """_summary_
-    {
+    subs = {
     "status": "success",
     "response": {
         "stasus": 200,
