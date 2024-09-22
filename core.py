@@ -550,9 +550,12 @@ async def event_job_subscription(link_subs: str, api_key: str, endpoint: str = "
         try:
             subs = await get_bubble_job_request(api_key=api_key,link=link_subs)
         except Exception as e:
-            logging.error(f"Не смогли получить даннеые из Bubble {link_subs}: {e}")
+            logging.error(f"Не смогли получить данные из Bubble {link_subs}: {e}")
+            await asyncio.sleep(3)
+            continue
+        
         if subs.get("response", {}).get("subscription_status") != "ACTIVE":
-            break
+            continue
         
         token_bubble = config.token_bubble
         data_notification = []
@@ -585,4 +588,3 @@ async def event_job_subscription(link_subs: str, api_key: str, endpoint: str = "
         # Задержка перед следующим запросом
         logging.info(f"Цикл успешно закончился подписка: {subs['response']['sub_id']}")
         await asyncio.sleep(duration)  # Задержка перед следующим запросом
-

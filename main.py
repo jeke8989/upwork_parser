@@ -11,8 +11,8 @@ async def lifespan(app: FastAPI):
     #logger.add("py_log.log", level="DEBUG", rotation="5 day")
     
     # Запуск асинхронной функции при старте приложения
-    asyncio.create_task(start_subscription())
-    await asyncio.sleep(3)
+    await start_subscription()
+    
     yield  # Это указывает на окончание фазы старта
 
 app = FastAPI(title="UpworkAPI", lifespan=lifespan)

@@ -37,9 +37,9 @@ async def get_list_jobs_upwork(url: str, api_key: str):
         return {"ok": False, "message": msg}
     
 @router.post('/create_cycle_sub')
-async def cycle_sub(link_subs: str, version: str, api_key: str, host: str, endpoint: str = None):
+async def cycle_sub(link_subs: str, api_key: str, endpoint: str = None):
     try:    
-        asyncio.create_task(event_job_subscription(link_subs=link_subs, version=version, api_key=api_key, host=host, endpoint=endpoint))
+        asyncio.create_task(event_job_subscription(link_subs=link_subs, api_key=api_key, endpoint=endpoint))
         logging.info(f"Создан такс успешно для восстановления активных подписок")
         return {
         "status": 200
