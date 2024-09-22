@@ -585,7 +585,7 @@ async def event_job_subscription(link_subs: str, api_key: str, endpoint: str = "
             for job in not_found_jobs:
                 try:
                     await post_bubble_job_add(api_key=api_key, token_bubble=token_bubble, job=job, subs=subs)
-                    logging.info(f"Работа добавлена: {job["title"]}")
+                    logging.info(f"Работа добавлена")
                 except Exception as e:
                     logging.error(f"Не смогли добавить работу: {e}")
                     continue    
