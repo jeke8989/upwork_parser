@@ -25,7 +25,7 @@ async def get_bubble_job_request(api_key: str, link: str) -> dict:
             async with session.get(host_url_job, headers=header, params=params) as respose:
                 respose.raise_for_status()
                 data = await respose.json()
-                logging.info(f"Данные по юзеру успешно получены.")
+                logging.info(f"Данные по юзеру успешно получены. {json.dumps(data, indent=2, ensure_ascii=False)}" )
                 return data
                 
         except aiohttp.ClientError as e:

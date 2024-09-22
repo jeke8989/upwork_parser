@@ -1,5 +1,7 @@
 import asyncio
 import aiohttp
+import random
+
 import bs4
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -489,8 +491,22 @@ async def start_subscription():
         link = sub.get("link")
         api_key = sub.get("api-key")
         asyncio.create_task(event_job_subscription(link_subs=link, api_key=api_key))
-        
+        await asyncio.sleep(random.uniform(0.2, 2))
     
+
+ACTIVE_SESSIONS = {}
+"""
+{
+    "links": [...]
+}
+"""
+
+
+def check_if_job_isactive(link) -> bool:
+    if link in ACTIVE_SESSIONS:
+        return True
+    return False
+
 
 #Создание подписки на Работу Upwork
 async def event_job_subscription(link_subs: str, api_key: str, endpoint: str = ""):
@@ -544,7 +560,11 @@ async def event_job_subscription(link_subs: str, api_key: str, endpoint: str = "
         link (str): _description_
         api_key (str): _description_
     """
+    return_ = False
     while True:
+        if return_:
+            return
+        
         logging.info(f"Начался цикл с подпиской")
         #Получение данных из Bubble
         try:
@@ -555,7 +575,7 @@ async def event_job_subscription(link_subs: str, api_key: str, endpoint: str = "
             continue
         
         if subs.get("response", {}).get("subscription_status") != "ACTIVE":
-            continue
+            break
         
         token_bubble = config.token_bubble
         data_notification = []
@@ -566,14 +586,19 @@ async def event_job_subscription(link_subs: str, api_key: str, endpoint: str = "
             logging.error(f"Не смогли получить даннеые из Upwork: {e}")
             new_data = []
         
-    
         # Проверяем наличие новых объектов по полю "link"
-        
         if subs:
             old_links = {jobs['link'] for jobs in subs["response"]["jobs"]}
             # Фильтруем новые данные
             for job_new in new_data:
-                if job_new['link'] not in old_links:  # Проверяем, есть ли ссылка в old_links
+                if job_new['link'] not in old_links and job_new not in data_notification:  # Проверяем, есть ли ссылка в old_links
+                    if check_if_job_isactive(job_new['link']):
+                        return_ = True
+                        continue
+                    
+                    if return_ is True:
+                        return
+                    
                     data_notification.append(job_new)  # Добавляем новые объекты в data_notification
                     # Здесь можно обработать data_notification (например, отправить уведомление)
                     try:
@@ -582,9 +607,11 @@ async def event_job_subscription(link_subs: str, api_key: str, endpoint: str = "
                     except Exception as e:
                         logging.error(f"Не смогли добавить работу: {e}")    
                     await send_notification(job=job_new, subs=subs)
-                    
-                   
+
         duration = int(config.duration)
         # Задержка перед следующим запросом
         logging.info(f"Цикл успешно закончился подписка: {subs['response']['sub_id']}")
         await asyncio.sleep(duration)  # Задержка перед следующим запросом
+        
+        if check_if_job_isactive(job_new['link']):
+            return
