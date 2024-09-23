@@ -577,9 +577,12 @@ async def event_job_subscription(link_subs: str, api_key: str, endpoint: str = "
         if subs:
             # Получаем список ссылок из subs
             existing_jobs = subs["response"]["jobs"]
+            existing_jobs_link = []
+            for job in existing_jobs:
+                existing_jobs_link.append(job["Link"])
 
             # Находим работы, которых нет в existing_jobs
-            not_found_jobs = [job for job in new_data if job["link"] not in existing_jobs]
+            not_found_jobs = [job for job in new_data if job["link"] not in existing_jobs_link]
             
             # Выводим результаты
             for job in not_found_jobs:
