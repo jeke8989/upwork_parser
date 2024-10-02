@@ -149,13 +149,7 @@ async def get_info_list(url: str) -> dict:
 
     async with async_playwright() as plw:
         browser = await plw.chromium.launch(headless=False)
-        context = await browser.new_context(
-            proxy={
-                "server": proxy,
-                "username": proxy_username,
-                "password": proxy_password,
-            }
-        )
+        context = await browser.new_context()
         page = await context.new_page()
         await stealth_async(page)
         await page.goto(url, wait_until="domcontentloaded")
@@ -257,13 +251,7 @@ async def get_single_job(url: str) -> dict:
 
     async with async_playwright() as plw:
         browser = await plw.chromium.launch(headless=False)
-        context = await browser.new_context(
-            proxy={
-                "server": proxy,
-                "username": proxy_username,
-                "password": proxy_password,
-            }
-        )
+        context = await browser.new_context()
         page = await context.new_page()
         await stealth_async(page)
         await page.goto(url, wait_until="domcontentloaded")
