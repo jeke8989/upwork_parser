@@ -124,48 +124,49 @@ async def get_info_list_old(url: str):
     return job_list
 
 async def get_info_list(url: str) -> dict:
-    proxy = "http://185.162.130.85:10005"
-    proxy_username = "JfhR3aez3sSp"
-    proxy_password = "RNW78Fm5"
-    job_list = []
+    try:
+        job_list = []
 
-    def parse_with_soup(tag: bs4.Tag, index: int):
-        nonlocal job_list
+        def parse_with_soup(tag: bs4.Tag, index: int):
+            nonlocal job_list
 
-        title = tag.select_one(".job-tile-title")
-        link_element = tag.select_one("a")
-        link = link_element["href"]
-        price = tag.select_one('[data-test="job-type-label"]')
-        description = tag.select_one(".text-body-sm")
+            title = tag.select_one(".job-tile-title")
+            link_element = tag.select_one("a")
+            link = link_element["href"]
+            price = tag.select_one('[data-test="job-type-label"]')
+            description = tag.select_one(".text-body-sm")
 
-        job_append = Job(
-            id=index + 1,
-            title=title.text,
-            description=description.text,
-            price=price.text,
-            link=link,
-        )
-        job_list.append(job_append.to_dict())
+            job_append = Job(
+                id=index + 1,
+                title=title.text,
+                description=description.text,
+                price=price.text,
+                link=link,
+            )
+            job_list.append(job_append.to_dict())
 
-    async with async_playwright() as plw:
-        browser = await plw.chromium.launch(headless=False)
-        context = await browser.new_context()
-        page = await context.new_page()
-        await stealth_async(page)
-        await page.goto(url, wait_until="domcontentloaded")
-        content = await page.content()
+        async with async_playwright() as plw:
+            
+            browser = await plw.chromium.launch(headless=False)
+            context = await browser.new_context()
+            page = await context.new_page()
+            await stealth_async(page)
+            await page.goto(url, wait_until="domcontentloaded")
+            content = await page.content()
 
-    soup = bs4.BeautifulSoup(content, "lxml")
-    job_elements = soup.select(".job-tile")
+        soup = bs4.BeautifulSoup(content, "lxml")
+        job_elements = soup.select(".job-tile")
 
-    tasks = []
-    for index, i in enumerate(job_elements):
-        i: bs4.Tag
-        tasks.append(asyncio.to_thread(parse_with_soup, i, index))
+        tasks = []
+        for index, i in enumerate(job_elements):
+            i: bs4.Tag
+            tasks.append(asyncio.to_thread(parse_with_soup, i, index))
 
-    await asyncio.gather(*tasks)
+        await asyncio.gather(*tasks)
 
-    return job_list
+        return job_list
+    except Exception as e:
+        logging.error(f"Не удалось получить список работ: {e}")
 
 # Получаем данные по одной работе
 async def get_single_job_old(url: str) -> dict:
