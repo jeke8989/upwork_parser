@@ -124,6 +124,7 @@ async def get_info_list_old(url: str):
     return job_list
 
 async def get_info_list(url: str) -> dict:
+    logging.info(f"Подключаемся к Upwork для парсинга")
     try:
         job_list = []
 
@@ -163,8 +164,12 @@ async def get_info_list(url: str) -> dict:
             tasks.append(asyncio.to_thread(parse_with_soup, i, index))
 
         await asyncio.gather(*tasks)
-
-        return job_list
+        if len(tasks) != 0:  
+            logging.info(f"Успешно получили данные с Upwork")
+            return job_list
+        else:
+            logging.error(f"Колличество работ 0. Не смогли получить данные")
+        
     except Exception as e:
         logging.error(f"Не удалось получить список работ: {e}")
 
