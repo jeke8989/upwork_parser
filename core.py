@@ -2,6 +2,7 @@ import asyncio
 import aiohttp
 import random
 
+import yarl
 import bs4
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -25,10 +26,11 @@ from keybods import create_btn
 from upwork.models import Job, Job_Advance, Client
 from typing import List
 import json
+from utils import get_proxies
 from loguru import logger as logging
 
 # Настройка логирования
-logging.add("py_log.log", level="DEBUG")
+# logging.add("py_log.log", level="DEBUG")
 
 # logging.basicConfig(
 #     level=logging.INFO,  # Уровень логирования
@@ -147,9 +149,20 @@ async def get_info_list(url: str) -> dict:
             job_list.append(job_append.to_dict())
 
         async with async_playwright() as plw:
+            proxies = get_proxies()
+            
+            if not proxies:
+                proxy = None
+            else:
+                proxy_url = yarl.URL(random.choice(proxies))
+                proxy = {
+                    "server": f"{proxy_url.scheme}://{proxy_url.host}:{proxy_url.port}",
+                    "username": proxy_url.user,
+                    "password": proxy_url.password
+                }
             
             browser = await plw.chromium.launch(headless=False)
-            context = await browser.new_context()
+            context = await browser.new_context(proxy=proxy, ignore_https_errors=True)
             page = await context.new_page()
             await stealth_async(page)
             await page.goto(url, wait_until="domcontentloaded")

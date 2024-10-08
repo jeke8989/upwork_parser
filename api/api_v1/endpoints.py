@@ -4,7 +4,7 @@ from core import get_info_list, get_single_job, event_job_subscription
 from loguru import logger as logging
 import asyncio
 
-logging.add("py_log.log", level="DEBUG")
+# logging.add("py_log.log", level="DEBUG")
 router = APIRouter()
 
 @router.get('/list_jobs')

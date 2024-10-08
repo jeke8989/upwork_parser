@@ -8,7 +8,7 @@ from api.api_v1 import endpoints
 import uvicorn
 
 async def lifespan(app: FastAPI):
-    #logger.add("py_log.log", level="DEBUG", rotation="5 day")
+    logger.add("py_logs/py_log.log", level="DEBUG", rotation="5 day")
     
     # Запуск асинхронной функции при старте приложения
     await start_subscription()
