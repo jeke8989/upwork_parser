@@ -383,7 +383,7 @@ async def send_telegram(tg_chat_id: str, job: dict, subs: dict):
     job_link = str(link_jon).replace('jobs/', "").split("/?")[0]
     url = f"https://www.upwork.com/freelance-jobs/apply{job_link}"
     keybord = await create_btn(url)
-    text = f"""New JOB Upwork\n\n<b>{job["title"]}</b>\n\n<i>{job["price"]}</i>\n\n{job['description'][0:max_length]}\n\n<i>Posted date: {job.get('posted_date')}</i>\n\n\n<b>Subscription ID: {subs['response']['name']}</b>\nSubscription Link: {subs['response']['sub_link']}"""
+    text = f"""<b>{job["title"]}</b>\n\n<i>{job["price"]}</i>\n\n{job['description'][0:max_length]}\n\n<i>Posted date: {job.get('posted_date')}</i>\n\n\n<b>Subscription ID: {subs['response']['name']}</b>\nSubscription Link: {subs['response']['sub_link']}"""
     await config.bot.send_message(chat_id=tg_chat_id, text=text, reply_markup=keybord, parse_mode = "HTML")
     
 #Отправка Endpoint уведомление
